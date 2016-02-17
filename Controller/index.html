@@ -1,0 +1,323 @@
+﻿
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Controller</title>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+  <script type="text/javascript">
+
+  var socket = io.connect('http://192.168.11.11:3000');
+    //var socket = io.connect('http://192.168.100.105:3000');
+
+    var KeyState = new Array(244);
+    var camerafb =0;
+    var mode = true;
+    var fb = true;
+    var crsv1 = 90;
+    var crsv2 = 90;
+
+
+
+	document.onkeydown = keydownMethod;
+
+	function keydownMethod(){
+	    /*console.log('push');
+	    com(event.keyCode);*/
+
+	    if(event.keyCode === 65 ){//カメラ前後切り替え。
+		  	if(camerafb == 0){
+		  		document.getElementById("gazo").src = "http://192.168.11.11:8494/?action=stream";
+		  		camerafb = 1;
+		  	}else{
+		  		document.getElementById("gazo").src = "http://192.168.11.11:8495/?action=stream";
+		  		camerafb = 0;
+		  	}
+		}
+		if(event.keyCode === 67){//モード切替
+			mode = !mode;
+		}
+
+		if(event.keyCode === 90){
+			fb = !fb;
+		}
+		KeyState[event.keyCode] = 1;
+	}
+
+	document.onkeyup = keyupMethod;
+
+	function keyupMethod(){
+		/*console.log(event.keyCode);
+		if(event.keyCode === 32){
+			socket.emit('command', {
+		        action: 'post',
+		        com:'0',
+		        subcom:'0'
+		    });
+		}else if(event.keyCode === 37 || event.keyCode === 39){
+			socket.emit('command', {
+		        action: 'post',
+		        com:'6',
+		        subcom:'0'
+		    });
+		}*/
+
+		KeyState[event.keyCode] = 0;
+	}
+
+	setInterval("sendSen()",500);
+
+	function sendSen(){
+
+		if(mode){
+			if(KeyState[32] == 1){
+				if(fb){
+					socket.emit('command', {
+				        action: 'post',
+				        com:'1',
+				        subcom:'10'
+				    });
+				    console.log('1:10');
+				}else{
+					socket.emit('command', {
+				        action: 'post',
+				        com:'2',
+				        subcom:'10'
+				    });
+				    console.log('2:10');
+				}
+			}else if(KeyState[88] == 1){
+				socket.emit('command', {
+			        action: 'post',
+			        com:'3',
+			        subcom:'0'
+			    });
+			    console.log('3:0');
+			}else{
+				socket.emit('command', {
+			        action: 'post',
+			        com:'0',
+			        subcom:'0'
+			    });
+			    console.log('0:0');
+			}
+
+			if(KeyState[37] == 1){
+				socket.emit('command', {
+			        action: 'post',
+			        com:'5',
+			        subcom:'10'
+			    });
+			}else if(KeyState[39] == 1){
+				socket.emit('command', {
+			        action: 'post',
+			        com:'4',
+			        subcom:'0'
+			    });
+			}else{
+				socket.emit('command', {
+			        action: 'post',
+			        com:'6',
+			        subcom:'0'
+			    });
+			}
+		}else{
+			if (keyState[88] == 1) {
+				crsv1 = 90;
+				crsv2 = 90;
+			}else if (keyState[38] == 1) {
+				if(crsv1<180){
+					crsv1 += 1;
+				}else{
+					crsv1 = 180;
+				}
+			}else if (keyState[40] == 1) {
+				if(crsv1>0){
+					crsv1 -= 1;
+				}else{
+					crsv1 = 0;
+				}
+			}else if (keyState[37] == 1) {
+				if(crsv2<180){
+					crsv2 += 1;
+				}else{
+					crsv2 = 180;
+				}
+			}else if (keyState[39] == 1) {
+				if(crsv2>0){
+					crsv2 -= 1;
+				}else{
+					crsv2 = 0;
+				}
+			}
+			socket.emit('command', {
+				action: 'post',
+				com:'7',
+				subcom:com.crsv1 + ''
+			});
+			socket.emit('command', {
+				action: 'post',
+				com:'8',
+				subcom:com.crsv2 + ''
+			});
+		}
+		socket.emit('sens', {
+	        action: 'post'
+	    });
+	}
+
+	socket.on("sencer", function (data) {
+    	document.getElementById("sencer1").innerHTML = data.sencer1;
+    	document.getElementById("sencer2").innerHTML = data.sencer2;
+    	//console.log('senser'+data.sencer1);
+    });
+
+
+  function com(come){
+	  if (typeof com.mode === 'undefined') {
+	        com.mode = 0;
+	  }
+	  if (typeof com.fb === 'undefined') {
+	        com.fb = true;
+	  }
+	  if (typeof com.sp === 'undefined') {
+	        com.sp = 0;
+	  }
+	  if (typeof com.br === 'undefined') {
+	        com.br = true;
+	  }
+
+	  if (typeof com.crsv1 === 'undefined') {
+	        com.crsv1 = 90;
+	  }
+	  if (typeof com.crsv2 === 'undefined') {
+	        com.crsv2 = 90;
+	  }
+
+	  if (typeof com.cptime === 'undefined') {
+	        com.cptime = 0;
+	  }
+
+
+
+	  if (com.mode == 0){
+	    if (come === 67) {
+	      com.mode = 1;
+	    }else if(come === 90){
+	      com.fb = !com.fb;
+	    }else if(come === 38){
+	      if(com.sp<10) com.sp += 1;
+	    }else if(come === 40){
+	      if(com.sp>0) com.sp -= 1;
+	    }
+
+	    if (come === 32) {
+	      com.br = false;
+	    }else{
+	    	com.br = true;
+	    }
+
+	    if(com.br == true){
+	      socket.emit('command', {
+	        action: 'post',
+	        com:'0',
+	        subcom:'0'
+	      });
+	    }else{
+	      if(com.fb == true){
+	        socket.emit('command', {
+	          action: 'post',
+	          com:'1',
+	          subcom:/*com.sp+''*/'10'
+	        });
+	      }else{
+	        socket.emit('command', {
+	          action: 'post',
+	          com:'2',
+	          subcom:/*com.sp+''*/'10'
+	        });
+	      }
+	    }
+
+	    if (come === 39) {
+	      socket.emit('command', {
+	        action: 'post',
+	        com:'4',
+	        subcom:'0'
+	      });
+	    }else if(come === 37){
+	      socket.emit('command', {
+	        action: 'post',
+	        com:'5',
+	        subcom:'0'
+	      });
+	    }else{
+	      socket.emit('command', {
+	        action: 'post',
+	        com:'6',
+	        subcom:'0'
+	      });
+	    }
+
+	  }else{
+	    if (come === 88) {
+	      com.crsv1 = 90;
+	      com.crsv2 = 90;
+	    }else if (come === 38) {
+	      if(com.crsv1<180){
+	      	com.crsv1 += 1;
+	      }else{
+	      	com.crsv1 = 180;
+	      }
+	    }else if (come === 40) {
+	      if(com.crsv1>0){
+	      	com.crsv1 -= 1;
+	      }else{
+	      	com.crsv1 = 0;
+	      }
+	    }else if (come === 37) {
+	      if(com.crsv2<180){
+	      	com.crsv2 += 1;
+	      }else{
+	      	com.crsv2 = 180;
+	      }
+	    }else if (come === 39) {
+	      if(com.crsv2>0){
+	      	com.crsv2 -= 1;
+	      }else{
+	      	com.crsv2 = 0;
+	      }
+	    }
+
+    	socket.emit('command', {
+	        action: 'post',
+	        com:'7',
+	        subcom:com.crsv1 + ''
+	    });
+
+	    socket.emit('command', {
+	        action: 'post',
+	        com:'8',
+	        subcom:com.crsv2 + ''
+	    });
+	  }
+	}
+
+  </script>
+  <!--<img src="http://192.168.11.11:8494/?action=stream">
+  <img src="http://192.168.11.11:8495/?action=stream">-->
+  <p class="resizeimage">
+　　<img id="gazo" src="http://192.168.11.11:8494/?action=stream"   style="width:100%;height:auto;" border="0" alt="">
+  </p>
+  <div style="position: absolute; top: 650px; align="center"">
+  <font size="4" color="#ffffff">
+	<a id="sencer1" ></a>
+	<a id="sencer2" ></a>
+  </font>
+  </div>
+
+</body>
+</html>
