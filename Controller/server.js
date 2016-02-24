@@ -1,47 +1,300 @@
-/*var http = require('http');
-var serialport = require("serialport");
-
-http.createServer(function (request, response) {
-  response.writeHead(200, {'Content-Type': 'text/plain'});
-  response.end('Hello World\n');
-}).listen(8124);
-*/
+var http = require("http"); // http関連
+var socketio = require("socket.io"); // ソケット通信
+var fs = require("fs"); // ファイルの読書き
+serialport = require('serialport');
 var sys = require('sys');
-var io = require('socket.io').listen(8080);
-/*var sp = new serialport.SerialPort("/dev/ttyACM0", {
-  baudrate: 115200,
-  dataBits:8,
-  parity:'none',
-  flowControl:false
-});*/
-sys.print('connect?');
+var async = require('async');
+
+var sp = new serialport.SerialPort(/*"/dev/ttyACM0"*/"/dev/tty.usbmodem1421", {
+                                   baudrate: 9600,
+                                   dataBits:8,
+                                   parity:'none',
+                                   flowControl:false,
+                                   parser: serialport.parsers.readline("\n")
+                                   });
+console.log('start');
+var server = http.createServer(function(req, res) {
+                               res.writeHead(200, {"Content-Type":"text/html"}); // 起動直後にhttpヘッダに書き込む内容
+                               var output = fs.readFileSync("./index.html", "utf-8"); // index.htmlファイルを読み込む
+                               res.end(output); // index.htmlを表示
+                               }).listen(process.env.VMC_APP_PORT || 3000); // webサーバで利用するportを自動選択（リモート or ローカル）
+
+var io = socketio.listen(server);
+var count = 0;
+var sencer1 = 0;
+var sencer2 = 0;
+
+var sescount = 0;
+var sescount2 = 0;
+
+var automode = 0;
+
+var delaycounter = 0;
+var delaycounter2 = 0;
+
+var returnCounter1 = 0;
+var returnCounter2 = 0;
+var returnCounter3 = 0;
+
+
+/*パラメーター*/
+var returnParam = 15;//切り返し時間
+var returnParam2 = 20;//切り返し回数
+
+var auto = true;
+
+function Sleep( T ){
+    var d1 = new Date().getTime();
+    var d2 = new Date().getTime();
+    while( d2 < d1+T ){    //T秒待つ
+        d2=new Date().getTime();
+    }
+    return;
+}
+
+function autodrive(){
+    switch(automode){
+        case 0:
+            if(sp.isOpen()){
+
+                sp.write(new Buffer(['7']));
+                sp.write(new Buffer(['90']));
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
+
+                sescount = 0;
+                console.log('camera init');
+            }
+            automode++;
+            console.log('0');
+            break;
+        case 1://壁まで前進
+
+            if(sp.isOpen()){
+                if(sencer1>110){
+                    sescount++;
+                }else{
+                    sescount2++;
+                }
+                if(sescount<3){
+                    sp.write(new Buffer(['1']));
+                    sp.write(new Buffer(['10']));
+                }else{
+                    automode++;
+                }
+
+                if(sescount2>5){
+                    sescount=0;
+                    sescount2=0;
+                }
+            }
+            console.log('1');
+            break;
+        case 2://左を向く
+            sp.write(new Buffer(['0']));
+            console.log('2');
+
+            sp.write(new Buffer(['8']));
+            sp.write(new Buffer(['180']));
+            automode++;
+            delaycounter=0;
+            break;
+
+        case 3://左が壁かどうか。
+            if(delaycounter>10){
+                if(sencer1<150){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['90']));
+                    automode=6;
+                    delaycounter=0;
+                    delaycounter2=0;
+                }else{
+                    automode++;
+                }
+            }
+            delaycounter++;
+            console.log('3');
+            break;
+
+        case 4://右を向く
+            sp.write(new Buffer(['8']));
+            sp.write(new Buffer(['0']));
+            console.log('4');
+            automode ++;
+            delaycounter=0;
+            break;
+
+        case 5://右が壁かどうか
+            if(delaycounter>10){
+                if(sencer1<150){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['90']));
+                    automode=7;
+                    delaycounter=0;
+                    delaycounter2=0;
+                }else{
+                    console.log('行き止まり');
+                }
+            }
+            delaycounter++;
+            console.log('5');
+
+            break;
+
+        case 6://バック
+            sp.write(new Buffer(['8']));
+            sp.write(new Buffer(['90']));
+            if(sencer1<100&&delaycounter>5){
+                returnCounter1=0;
+                returnCounter2=0;
+                automode=9;
+            }else{
+                sp.write(new Buffer(['4']));
+                sp.write(new Buffer(['2']));
+                sp.write(new Buffer(['10']));
+            }
+
+            delaycounter++;
+            console.log('6');
+            break;
+
+        case 7://バック
+            sp.write(new Buffer(['8']));
+            sp.write(new Buffer(['90']));
+
+            if(sencer1<100&&delaycounter>5){
+                returnCounter1=0;
+                returnCounter2=0;
+                automode=8;
+            }else{
+                sp.write(new Buffer(['5']));
+                sp.write(new Buffer(['2']));
+                sp.write(new Buffer(['10']));
+            }
+
+            delaycounter++;
+            console.log('7');
+            break;
+
+        case 8://右に切り返し
+            console.log('8');
+            sp.write(new Buffer(['8']));
+            sp.write(new Buffer(['90']));
+
+            if(returnCounter1<returnParam*1){
+                sp.write(new Buffer(['4']));
+                sp.write(new Buffer(['1']));
+                sp.write(new Buffer(['10']));
+            }else if(returnCounter1<returnParam*2){
+                sp.write(new Buffer(['5']));
+                sp.write(new Buffer(['2']));
+                sp.write(new Buffer(['10']));
+            }else{
+                returnCounter2++;
+                returnCounter1=0;
+            }
+
+            if(returnCounter2>returnParam2){
+                automode = 10;
+            }
+
+            returnCounter1++;
+
+            break;
+
+
+        case 9://左に切り返し
+        console.log('9');
+            sp.write(new Buffer(['8']));
+            sp.write(new Buffer(['90']));
+
+            if(returnCounter1<returnParam*1){
+                sp.write(new Buffer(['5']));
+                sp.write(new Buffer(['1']));
+                sp.write(new Buffer(['10']));
+            }else if(returnCounter1<returnParam*2){
+                sp.write(new Buffer(['4']));
+                sp.write(new Buffer(['2']));
+                sp.write(new Buffer(['10']));
+            }else{
+                returnCounter2++;
+                returnCounter1=0;
+            }
+
+            if(returnCounter2>returnParam2){
+                automode = 10;
+            }
+
+            returnCounter1++;
+
+            break;
+
+    }
+}
+
 io.sockets.on('connection', function(socket) {
-  console.log('onconnection:', socket);
+              console.log('connected');
+              socket.on('command', function(data) {
 
-  socket.on('command', function(data) {
-    sp.on("open", function () {
-      console.log('open');
-      setTimeout(function() {
-        sp.write(data.com);
-        console.log(data.com);
-      }, 2000);
-    });
-    sp.on('data', function(dataa) {
-      console.log('data received: ' + dataa);
-      if(data==10){
-        if(dataa.subcam!='0'){
-          sp.write(dataa.subcam);
-        }
-      }
-    });
-    console.log(data.com);
-    sys.print(data.com);
-  });
+                        if(sp.isOpen()){
+                        sp.write(new Buffer([data.com]));
+                        if(data.com!=0 && data.com != 6)console.log('output'+data.com);
+                        if(data.subcom!='0'||data.com == 8 ||data.com == 7){
+                        sp.write(new Buffer([data.subcom]));
+                        console.log('output subcom '+data.subcom);
+                        }
+                        }
+                        });
 
+              sp.on('data', function(input) {
+                    var inp = input;
+                    var inpB = 'result'+inp;
 
+                    //console.log('count '+count);
+                    //console.log(inpB);
+                    //console.log(' ');
+                    /*
+                     if(inpB === 'resultsf'){
+                     count = 1;
+                     console.log('kitayo');
+                     }else if(inpB === 'resultsb'){
+                     count = 2;
+                     console.log('konaide');
+                     }*/
 
+                    if(inp == 9){
+                    count = 0;
+                    }
 
-  socket.on('disconnect', function() {
-    console.log('disconn');
-  });
-});
+                    if(count ==3){
+                    if(Number(inp)!=null){
+                    sencer1 = Number(inp);
+                    }
+                    }
+                    if(count ==5){
+                    if(Number(inp)!=null){
+                    sencer2 = Number(inp);
+                    }
+                    }
+                    //console.log('count '+count);
+                    //console.log('sens1=' + sencer1 + ' sens2=' + sencer2);
+
+                    count++;
+                    socket.emit('sencer', {
+                                action: 'post',
+                                sencer1:sencer1,
+                                sencer2:sencer2
+                                });
+                    });
+              socket.on('disconnect', function() {
+                        console.log('disconn');
+                        });
+
+              socket.on('sens', function() {
+                        count = 0;
+                        sp.write(new Buffer(['9']));
+                        //console.log('9');
+                        if(automode||true)autodrive();
+                        });
+
+              });
