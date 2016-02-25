@@ -36,10 +36,12 @@ var returnCounter1 = 0;
 var returnCounter2 = 0;
 var returnCounter3 = 0;
 
+var compas = 90;
+
 
 /*パラメーター*/
 var returnParam = 15;//切り返し時間
-var returnParam2 = 20;//切り返し回数
+var returnParam2 = 4;//切り返し回数
 
 var auto = true;
 
@@ -52,7 +54,46 @@ function Sleep( T ){
     return;
 }
 
+function rightAngle(LR){
+  var biggestAng=0;
+  var biggestValue=9999;
+  if(LR == 'left'){
+    sp.write(new Buffer(['8']));
+    sp.write(new Buffer(['180']));
+
+    for (var i = 90; i <=180; i+=10) {
+    var buf=getDistanceByAngle(i);
+    if(biggestValue>buf){
+      biggestValue=buf;
+      biggestAng = i;
+    }
+  }
+  }else{
+    sp.write(new Buffer(['8']));
+    sp.write(new Buffer(['0']));
+
+    for (var i = 0; i <90; i+=10) {
+    var buf=getDistanceByAngle(i);
+    if(biggestValue>buf){
+      biggestValue=buf;
+      biggestAng = i;
+    }
+  }
+  }
+
+  return biggestAng;
+}
+
+function getDistanceByAngle(ang){
+  var s1=sencer1;
+  var s2=sencer1;
+  var s3=sencer1;
+
+  return (s1+s2+s3)/3;
+}
+
 function autodrive(){
+  console.log(automode);
     switch(automode){
         case 0:
             if(sp.isOpen()){
@@ -63,6 +104,7 @@ function autodrive(){
                 sp.write(new Buffer(['90']));
 
                 sescount = 0;
+                sescount2=0;
                 console.log('camera init');
             }
             automode++;
@@ -71,7 +113,7 @@ function autodrive(){
         case 1://壁まで前進
 
             if(sp.isOpen()){
-                if(sencer1>110){
+                if(sencer1>100){
                     sescount++;
                 }else{
                     sescount2++;
@@ -88,16 +130,17 @@ function autodrive(){
                     sescount2=0;
                 }
             }
-            console.log('1');
+            //console.log('1');
             break;
         case 2://左を向く
             sp.write(new Buffer(['0']));
-            console.log('2');
+            //console.log('2');
 
             sp.write(new Buffer(['8']));
             sp.write(new Buffer(['180']));
             automode++;
             delaycounter=0;
+            delaycounter2=0;
             break;
 
         case 3://左が壁かどうか。
@@ -113,13 +156,13 @@ function autodrive(){
                 }
             }
             delaycounter++;
-            console.log('3');
+            //console.log('3');
             break;
 
         case 4://右を向く
             sp.write(new Buffer(['8']));
             sp.write(new Buffer(['0']));
-            console.log('4');
+            //console.log('4');
             automode ++;
             delaycounter=0;
             break;
@@ -134,64 +177,72 @@ function autodrive(){
                     delaycounter2=0;
                 }else{
                     console.log('行き止まり');
+                    sescount=0;
+                    sescount2=0;
+                    automode = 11;
                 }
             }
             delaycounter++;
-            console.log('5');
+            //console.log('5');
 
             break;
 
         case 6://バック
             sp.write(new Buffer(['8']));
             sp.write(new Buffer(['90']));
-            if(sencer1<100&&delaycounter>5){
+            if(sencer1<120&&delaycounter>5){
                 returnCounter1=0;
                 returnCounter2=0;
+                delaycounter=0;
+                delaycounter2=0;
                 automode=9;
-            }else{
-                sp.write(new Buffer(['4']));
+            }else if(sencer2<100){
+                sp.write(new Buffer(['6']));
                 sp.write(new Buffer(['2']));
                 sp.write(new Buffer(['10']));
             }
 
             delaycounter++;
-            console.log('6');
+            //console.log('6');
             break;
 
         case 7://バック
             sp.write(new Buffer(['8']));
             sp.write(new Buffer(['90']));
 
-            if(sencer1<100&&delaycounter>5){
+            if(sencer1<120&&delaycounter>5){
                 returnCounter1=0;
                 returnCounter2=0;
                 automode=8;
-            }else{
-                sp.write(new Buffer(['5']));
+                delaycounter=0;
+                delaycounter2=0;
+            }else if(sencer2<100){
+                sp.write(new Buffer(['6']));
                 sp.write(new Buffer(['2']));
                 sp.write(new Buffer(['10']));
             }
 
             delaycounter++;
-            console.log('7');
+            //console.log('7');
             break;
 
         case 8://右に切り返し
-            console.log('8');
+            //console.log('8');
             sp.write(new Buffer(['8']));
             sp.write(new Buffer(['90']));
 
-            if(returnCounter1<returnParam*1){
+            if(returnCounter1<returnParam*1&&sencer1<200){
                 sp.write(new Buffer(['4']));
                 sp.write(new Buffer(['1']));
                 sp.write(new Buffer(['10']));
-            }else if(returnCounter1<returnParam*2){
+            }else if(returnCounter1<returnParam*2&&sencer2<200){
                 sp.write(new Buffer(['5']));
                 sp.write(new Buffer(['2']));
                 sp.write(new Buffer(['10']));
             }else{
                 returnCounter2++;
                 returnCounter1=0;
+
             }
 
             if(returnCounter2>returnParam2){
@@ -204,7 +255,6 @@ function autodrive(){
 
 
         case 9://左に切り返し
-        console.log('9');
             sp.write(new Buffer(['8']));
             sp.write(new Buffer(['90']));
 
@@ -219,6 +269,8 @@ function autodrive(){
             }else{
                 returnCounter2++;
                 returnCounter1=0;
+
+
             }
 
             if(returnCounter2>returnParam2){
@@ -228,6 +280,40 @@ function autodrive(){
             returnCounter1++;
 
             break;
+
+            case 10:
+              sescount = 0;
+              sescount2=0;
+              delaycounter=0;
+              delaycounter2=0;
+              automode = 1;
+            break;
+
+          case 11:
+            if(sp.isOpen()){
+                if(sencer2>100){
+                    sescount++;
+                }else{
+                    sescount2++;
+                }
+                if(sescount<3){
+                    sp.write(new Buffer(['6']));
+                    sp.write(new Buffer(['2']));
+                    sp.write(new Buffer(['10']));
+                }else{
+                    automode=1;
+                }
+
+                if(sescount2>5){
+                    sescount=0;
+                    sescount2=0;
+                }
+            }
+            //console.log('11');
+
+          break;
+
+
 
     }
 }
@@ -253,25 +339,20 @@ io.sockets.on('connection', function(socket) {
                     //console.log('count '+count);
                     //console.log(inpB);
                     //console.log(' ');
-                    /*
-                     if(inpB === 'resultsf'){
-                     count = 1;
-                     console.log('kitayo');
-                     }else if(inpB === 'resultsb'){
-                     count = 2;
-                     console.log('konaide');
-                     }*/
 
-                    if(inp == 9){
-                    count = 0;
+                     if(!isFinite(inp)){
+                      if(count != 2)count = 0;
+                      //console.log('a '+Number(inp));
                     }
 
-                    if(count ==3){
+
+
+                    if(count ==1){
                     if(Number(inp)!=null){
                     sencer1 = Number(inp);
                     }
                     }
-                    if(count ==5){
+                    if(count ==3){
                     if(Number(inp)!=null){
                     sencer2 = Number(inp);
                     }
@@ -291,7 +372,6 @@ io.sockets.on('connection', function(socket) {
                         });
 
               socket.on('sens', function() {
-                        count = 0;
                         sp.write(new Buffer(['9']));
                         //console.log('9');
                         if(automode||true)autodrive();
