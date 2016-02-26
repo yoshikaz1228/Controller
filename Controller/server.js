@@ -4,8 +4,9 @@ var fs = require("fs"); // ファイルの読書き
 serialport = require('serialport');
 var sys = require('sys');
 var async = require('async');
+var exec = require('child_process').exec;
 
-var sp = new serialport.SerialPort(/*"/dev/ttyACM0"*/"/dev/tty.usbmodem1421", {
+var sp = new serialport.SerialPort("/dev/ttyACM0", {
                                    baudrate: 9600,
                                    dataBits:8,
                                    parity:'none',
@@ -38,12 +39,16 @@ var returnCounter3 = 0;
 
 var compas = 90;
 
+var shellCount = 0;
+
 
 /*パラメーター*/
 var returnParam = 15;//切り返し時間
-var returnParam2 = 4;//切り返し回数
+var returnParam2 = 2;//切り返し回数
+var camsetAngLR = 5;//カメラ左右
+var camsetAngUD = 3;//カメラ上下
 
-var auto = true;
+var auto = false;
 
 function Sleep( T ){
     var d1 = new Date().getTime();
@@ -55,45 +60,45 @@ function Sleep( T ){
 }
 
 function rightAngle(LR){
-  var biggestAng=0;
-  var biggestValue=9999;
-  if(LR == 'left'){
-    sp.write(new Buffer(['8']));
-    sp.write(new Buffer(['180']));
+    var biggestAng=0;
+    var biggestValue=9999;
+    if(LR == 'left'){
+        sp.write(new Buffer(['8']));
+        sp.write(new Buffer(['180']));
 
-    for (var i = 90; i <=180; i+=10) {
-    var buf=getDistanceByAngle(i);
-    if(biggestValue>buf){
-      biggestValue=buf;
-      biggestAng = i;
+        for (var i = 90; i <=180; i+=10) {
+            var buf=getDistanceByAngle(i);
+            if(biggestValue>buf){
+                biggestValue=buf;
+                biggestAng = i;
+            }
+        }
+    }else{
+        sp.write(new Buffer(['8']));
+        sp.write(new Buffer(['0']));
+
+        for (var i = 0; i <90; i+=10) {
+            var buf=getDistanceByAngle(i);
+            if(biggestValue>buf){
+                biggestValue=buf;
+                biggestAng = i;
+            }
+        }
     }
-  }
-  }else{
-    sp.write(new Buffer(['8']));
-    sp.write(new Buffer(['0']));
 
-    for (var i = 0; i <90; i+=10) {
-    var buf=getDistanceByAngle(i);
-    if(biggestValue>buf){
-      biggestValue=buf;
-      biggestAng = i;
-    }
-  }
-  }
-
-  return biggestAng;
+    return biggestAng;
 }
 
 function getDistanceByAngle(ang){
-  var s1=sencer1;
-  var s2=sencer1;
-  var s3=sencer1;
+    var s1=sencer1;
+    var s2=sencer1;
+    var s3=sencer1;
 
-  return (s1+s2+s3)/3;
+    return (s1+s2+s3)/3;
 }
 
 function autodrive(){
-  console.log(automode);
+    //console.log(automode);
     switch(automode){
         case 0:
             if(sp.isOpen()){
@@ -105,32 +110,157 @@ function autodrive(){
 
                 sescount = 0;
                 sescount2=0;
+                shellCount=0;
                 console.log('camera init');
             }
             automode++;
             console.log('0');
             break;
         case 1://壁まで前進
+            if(shellCount<10){
+                sp.write(new Buffer(['7']));
+                sp.write(new Buffer(['120']));
+                if(shellCount==7){
+                  console.log('認識');
+                 exec('python ~/Documents/containTV/containTV.py', function(err, stdout, stderr){
+                     if(stdout == 0){
 
-            if(sp.isOpen()){
-                if(sencer1>100){
-                    sescount++;
-                }else{
-                    sescount2++;
-                }
-                if(sescount<3){
-                    sp.write(new Buffer(['1']));
-                    sp.write(new Buffer(['10']));
-                }else{
-                    automode++;
+                     }else if(stdout == 11){
+                     var ang1 = 90 + camsetAngLR;
+                     var ang2 = 120 + camsetAngUD;
+                     sp.write(new Buffer(['7']));
+                     sp.write(new Buffer([ang2]));
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 12){
+                     var ang2= 120 + camsetAngUD;
+                     sp.write(new Buffer(['7']));
+                     sp.write(new Buffer([ang2]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 13){
+                     var ang1 = 90 - camsetAngLR;
+                     var ang2 = 120 + camsetAngUD;
+                     sp.write(new Buffer(['7']));
+                     sp.write(new Buffer([ang2]));
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 21){
+                     var ang1 = 90 + camsetAngLR;
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 22){
+                      var ang1 = 90 - camsetAngLR;
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 23){
+                     var ang1 = 90 - camsetAngLR;
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 31){
+                     var ang1 = 90 + camsetAngLR;
+                     var ang2 = 120 - camsetAngUD;
+                     sp.write(new Buffer(['7']));
+                     sp.write(new Buffer([ang2]));
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 32){
+                     var ang2 = 120 - camsetAngUD;
+                     sp.write(new Buffer(['7']));
+                     sp.write(new Buffer([ang2]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+                     shellCount=11;
+                     }else if(stdout == 33){
+                     var ang1 = 90 + camsetAngLR;
+                     var ang2 = 120 - camsetAngUD;
+                     sp.write(new Buffer(['7']));
+                     sp.write(new Buffer([ang2]));
+                     sp.write(new Buffer(['8']));
+                     sp.write(new Buffer([ang1]));
+                     auto = false;
+                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                          console.log('shot');
+                          });
+
+                     }else if(stdout == -1){
+                     //見つかんなかった
+                     }
+                     console.log('出力'+stdout);
+                     console.log('エラー'+stderr);
+                     shellCount=11;
+                   });
+
+
+
+               }
+               if(shellCount<9)shellCount++;
+
+
+            }else{
+              console.log('1b');
+              sp.write(new Buffer(['7']));
+                sp.write(new Buffer(['90']));
+
+                if(sp.isOpen()){
+                    if(sencer1>100){
+                        sescount++;
+                    }else{
+                        sescount2++;
+                    }
+                    if(sescount<3){
+                        sp.write(new Buffer(['1']));
+                        sp.write(new Buffer(['10']));
+                    }else{
+                        automode++;
+                    }
+
+                    if(sescount2>5){
+                        sescount=0;
+                        sescount2=0;
+                    }
                 }
 
-                if(sescount2>5){
-                    sescount=0;
-                    sescount2=0;
-                }
             }
-            //console.log('1');
+
+
+
             break;
         case 2://左を向く
             sp.write(new Buffer(['0']));
@@ -196,7 +326,7 @@ function autodrive(){
                 delaycounter=0;
                 delaycounter2=0;
                 automode=9;
-            }else if(sencer2<100){
+            }else if(sencer2<300){
                 sp.write(new Buffer(['6']));
                 sp.write(new Buffer(['2']));
                 sp.write(new Buffer(['10']));
@@ -216,7 +346,7 @@ function autodrive(){
                 automode=8;
                 delaycounter=0;
                 delaycounter2=0;
-            }else if(sencer2<100){
+            }else if(sencer2<300){
                 sp.write(new Buffer(['6']));
                 sp.write(new Buffer(['2']));
                 sp.write(new Buffer(['10']));
@@ -281,15 +411,16 @@ function autodrive(){
 
             break;
 
-            case 10:
-              sescount = 0;
-              sescount2=0;
-              delaycounter=0;
-              delaycounter2=0;
-              automode = 1;
+        case 10:
+            sescount = 0;
+            sescount2=0;
+            delaycounter=0;
+            delaycounter2=0;
+            automode = 1;
+            shellCount=0;
             break;
 
-          case 11:
+        case 11:
             if(sp.isOpen()){
                 if(sencer2>100){
                     sescount++;
@@ -311,10 +442,7 @@ function autodrive(){
             }
             //console.log('11');
 
-          break;
-
-
-
+            break;
     }
 }
 
@@ -340,9 +468,9 @@ io.sockets.on('connection', function(socket) {
                     //console.log(inpB);
                     //console.log(' ');
 
-                     if(!isFinite(inp)){
-                      if(count != 2)count = 0;
-                      //console.log('a '+Number(inp));
+                    if(!isFinite(inp)){
+                    if(count != 2)count = 0;
+                    //console.log('a '+Number(inp));
                     }
 
 
@@ -374,7 +502,12 @@ io.sockets.on('connection', function(socket) {
               socket.on('sens', function() {
                         sp.write(new Buffer(['9']));
                         //console.log('9');
-                        if(automode||true)autodrive();
+                        if(auto)autodrive();
+                        });
+
+              socket.on('auto', function() {
+                        console.log('automode');
+                        auto = true;
                         });
 
               });
