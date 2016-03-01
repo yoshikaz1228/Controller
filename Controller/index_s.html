@@ -495,8 +495,6 @@
             }
         }
 
-        document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
-
         document.onkeydown = keydownMethod;
 
         /*console.log('auto mode');
@@ -535,6 +533,16 @@
             // ANDでつなげる
             form1.elements['search'].value = a+' AND '+b;
             alert(form1.elements['search'].value );
+        }
+
+        function bit2volt(bit){
+            return bit/204.8;
+        }
+
+        function sens2dist(sens){
+            var volt=bit2volt(sens);
+
+            return -28.57*volt+74.2825;
         }
 
         function keydownMethod(){
@@ -709,8 +717,8 @@
 
         socket.on("sencer", function (data) {
                   if(mode){
-                  document.getElementById("sencer1").innerHTML = data.sencer1+':'+parseInt(-0.2857*data.sencer1+74.285) +'cm';
-                  document.getElementById("sencer2").innerHTML = data.sencer2+':'+parseInt(-0.2857*data.sencer2+74.285) +'cm';
+                  document.getElementById("sencer1").innerHTML = parseInt(sens2dist(/*data.sencer1*/83)) +'cm';
+                  document.getElementById("sencer2").innerHTML = parseInt(sens2dist(/*data.sencer2*/205)) +'cm';
                   }
                   //console.log('senser'+data.sencer1);
                   });

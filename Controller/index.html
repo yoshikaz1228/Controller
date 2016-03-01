@@ -495,9 +495,6 @@
             }
         }
 
-        document.getElementById("gazo").src = IP_ADD + ":8495/?action=stream";
-        document.getElementById("gazo2").src = IP_ADD+":8494/?action=stream";
-
         document.onkeydown = keydownMethod;
 
         /*console.log('auto mode');
@@ -538,9 +535,24 @@
             alert(form1.elements['search'].value );
         }
 
+                function bit2volt(bit){
+            return bit/204.8;
+        }
+
+        function sens2dist(sens){
+            var volt=bit2volt(sens);
+
+            return -28.57*volt+74.2825;
+        }
+
+
         function keydownMethod(){
             /*console.log('push');
              com(event.keyCode);*/
+
+                  document.getElementById("sencer1").innerHTML = parseInt(sens2dist(/*data.sencer1*/83)) +'cm';
+                  document.getElementById("sencer2").innerHTML = parseInt(sens2dist(/*data.sencer2*/205)) +'cm';
+                  console.log("h");
 
             if(event.keyCode === 65 ){//カメラ前後切り替え。
                 if(camerafb == 0){
@@ -721,8 +733,8 @@
 
         socket.on("sencer", function (data) {
                   if(mode){
-                  document.getElementById("sencer1").innerHTML = data.sencer1+':'+parseInt(-0.2857*data.sencer1+74.285) +'cm';
-                  document.getElementById("sencer2").innerHTML = data.sencer2+':'+parseInt(-0.2857*data.sencer2+74.285) +'cm';
+                  document.getElementById("sencer1").innerHTML = parseInt(sens2dist(data.sencer1)) +'cm';
+                  document.getElementById("sencer2").innerHTML = parseInt(sens2dist(data.sencer2)) +'cm';
                   }
                   //console.log('senser'+data.sencer1);
                   });
@@ -802,7 +814,7 @@
         <div style="position: absolute; top: 10px; right: 3%">
             <button type="button" onclick="clickAutomode()" style="width: 100px; height:30px">AutoMode</button>
         </div>
-        <div style="position: absolute; top: 30%; left: 480px" >
+        <div style="position: absolute; top: 30%; left: 40vw" >
             <img id="circle" src="http://yoshikaz.ml/img/hiy.png" style="width:40%;height:45%;">
                 </div>
 
