@@ -1,6 +1,8 @@
-var http = require("http"); // http関連
+var http = require('http'),
+fs = require('fs'),
+url = require('url'),
+qs = require('querystring');
 var socketio = require("socket.io"); // ソケット通信
-var fs = require("fs"); // ファイルの読書き
 serialport = require('serialport');
 var sys = require('sys');
 var async = require('async');
@@ -15,11 +17,18 @@ var sp = new serialport.SerialPort("/dev/ttyACM0", {
                                    });
 console.log('start');
 var server = http.createServer(function(req, res) {
+                                var param_json = url.parse(req.url, true).query;
+                                console.log('id='+param_json.id);
+                                if(param_json.id == 'mobile'){
+                                  res.writeHead(200, {"Content-Type":"text/html"}); // 起動直後にhttpヘッダに書き込む内容
+                               var output = fs.readFileSync("./index_s.html", "utf-8"); // index.htmlファイルを読み込む
+                               res.end(output); // index.htmlを表示
+                             }else{
                                res.writeHead(200, {"Content-Type":"text/html"}); // 起動直後にhttpヘッダに書き込む内容
                                var output = fs.readFileSync("./index.html", "utf-8"); // index.htmlファイルを読み込む
                                res.end(output); // index.htmlを表示
+                             }
                                }).listen(process.env.VMC_APP_PORT || 3000); // webサーバで利用するportを自動選択（リモート or ローカル）
-
 var io = socketio.listen(server);
 var count = 0;
 var sencer1 = 0;
@@ -41,6 +50,8 @@ var compas = 90;
 
 var shellCount = 0;
 
+var circleviewCount=0;
+
 
 /*パラメーター*/
 var returnParam = 15;//切り返し時間
@@ -57,6 +68,148 @@ function Sleep( T ){
         d2=new Date().getTime();
     }
     return;
+}
+
+function getCame(num,socket){
+    exec('python ~/Documents/containTV/containTV.py', function(err, stdout, stderr){
+         if(stdout == 0){
+          exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                                      console.log('shot');
+                                      });
+                                  socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         }else if(stdout == 11){
+         var ang1 = 90 + camsetAngLR;
+         var ang2 = 120 + camsetAngUD;
+         sp.write(new Buffer(['7']));
+         sp.write(new Buffer([ang2]));
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 12){
+         var ang2= 120 + camsetAngUD;
+         sp.write(new Buffer(['7']));
+         sp.write(new Buffer([ang2]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 13){
+         var ang1 = 90 - camsetAngLR;
+         var ang2 = 120 + camsetAngUD;
+         sp.write(new Buffer(['7']));
+         sp.write(new Buffer([ang2]));
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 21){
+         var ang1 = 90 + camsetAngLR;
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 22){
+         var ang1 = 90 - camsetAngLR;
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 23){
+         var ang1 = 90 - camsetAngLR;
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 31){
+         var ang1 = 90 + camsetAngLR;
+         var ang2 = 120 - camsetAngUD;
+         sp.write(new Buffer(['7']));
+         sp.write(new Buffer([ang2]));
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 32){
+         var ang2 = 120 - camsetAngUD;
+         sp.write(new Buffer(['7']));
+         sp.write(new Buffer([ang2]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+         shellCount=22;
+         }else if(stdout == 33){
+         var ang1 = 90 + camsetAngLR;
+         var ang2 = 120 - camsetAngUD;
+         sp.write(new Buffer(['7']));
+         sp.write(new Buffer([ang2]));
+         sp.write(new Buffer(['8']));
+         sp.write(new Buffer([ang1]));
+         auto = false;
+         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+              console.log('shot');
+              });
+         socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+
+         }else if(stdout == -1){
+         //見つかんなかった
+         shellCount = num+1;
+         if(shellCount == 21){
+         shellCount = 22;
+         }
+         }
+         console.log('出力'+stdout);
+         console.log('エラー'+stderr);
+         });
 }
 
 function rightAngle(LR){
@@ -97,7 +250,7 @@ function getDistanceByAngle(ang){
     return (s1+s2+s3)/3;
 }
 
-function autodrive(){
+function autodrive(socket){
     //console.log(automode);
     switch(automode){
         case 0:
@@ -111,131 +264,221 @@ function autodrive(){
                 sescount = 0;
                 sescount2=0;
                 shellCount=0;
+                returnCounter2=0;
+                returnCounter1=0;
+                circleviewCount=0;
                 console.log('camera init');
             }
             automode++;
             console.log('0');
             break;
         case 1://壁まで前進
-            if(shellCount<10){
-                sp.write(new Buffer(['7']));
-                sp.write(new Buffer(['120']));
+            if(shellCount<22){
+
+                if(shellCount==0){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['0']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==1){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['30']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==2){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['60']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==3){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['90']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==4){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['120']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==5){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['150']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==6){
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['180']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
                 if(shellCount==7){
-                  console.log('認識');
-                 exec('python ~/Documents/containTV/containTV.py', function(err, stdout, stderr){
-                     if(stdout == 0){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['0']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==8){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['30']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==9){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['60']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==10){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['90']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==11){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['120']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==12){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['150']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==13){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['105']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['180']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==14){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['0']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==15){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['30']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==16){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['60']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==17){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['90']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==18){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['120']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==19){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['150']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+                if(shellCount==20){
+                    sp.write(new Buffer(['7']));
+                    sp.write(new Buffer(['120']));
+                    sp.write(new Buffer(['8']));
+                    sp.write(new Buffer(['180']));
+                    console.log('認識');
+                    getCame(shellCount,socket);
+                    shellCount = 21;
+                }
+            }else if(circleviewCount==0){
+                sp.write(new Buffer(['7']));
+                sp.write(new Buffer(['90']));
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
 
-                     }else if(stdout == 11){
-                     var ang1 = 90 + camsetAngLR;
-                     var ang2 = 120 + camsetAngUD;
-                     sp.write(new Buffer(['7']));
-                     sp.write(new Buffer([ang2]));
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
+                if(returnCounter1<returnParam*1){
+                    sp.write(new Buffer(['4']));
+                    sp.write(new Buffer(['1']));
+                    sp.write(new Buffer(['10']));
+                }else if(returnCounter1<returnParam*2){
+                    sp.write(new Buffer(['5']));
+                    sp.write(new Buffer(['2']));
+                    sp.write(new Buffer(['10']));
+                }else{
+                    returnCounter2++;
+                    returnCounter1=0;
+                }
 
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 12){
-                     var ang2= 120 + camsetAngUD;
-                     sp.write(new Buffer(['7']));
-                     sp.write(new Buffer([ang2]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 13){
-                     var ang1 = 90 - camsetAngLR;
-                     var ang2 = 120 + camsetAngUD;
-                     sp.write(new Buffer(['7']));
-                     sp.write(new Buffer([ang2]));
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 21){
-                     var ang1 = 90 + camsetAngLR;
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 22){
-                      var ang1 = 90 - camsetAngLR;
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 23){
-                     var ang1 = 90 - camsetAngLR;
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 31){
-                     var ang1 = 90 + camsetAngLR;
-                     var ang2 = 120 - camsetAngUD;
-                     sp.write(new Buffer(['7']));
-                     sp.write(new Buffer([ang2]));
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 32){
-                     var ang2 = 120 - camsetAngUD;
-                     sp.write(new Buffer(['7']));
-                     sp.write(new Buffer([ang2]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-                     shellCount=11;
-                     }else if(stdout == 33){
-                     var ang1 = 90 + camsetAngLR;
-                     var ang2 = 120 - camsetAngUD;
-                     sp.write(new Buffer(['7']));
-                     sp.write(new Buffer([ang2]));
-                     sp.write(new Buffer(['8']));
-                     sp.write(new Buffer([ang1]));
-                     auto = false;
-                     exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                          console.log('shot');
-                          });
-
-                     }else if(stdout == -1){
-                     //見つかんなかった
-                     }
-                     console.log('出力'+stdout);
-                     console.log('エラー'+stderr);
-                     shellCount=11;
-                   });
-
-
-
-               }
-               if(shellCount<9)shellCount++;
-
-
+                if(returnCounter2>(returnParam2*3)){
+                    circleviewCount = 1;
+                    shellCount = 0;
+                }
+                returnCounter1++;
             }else{
-              console.log('1b');
-              sp.write(new Buffer(['7']));
+                console.log('1b');
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
+                sp.write(new Buffer(['7']));
                 sp.write(new Buffer(['90']));
 
                 if(sp.isOpen()){
@@ -257,257 +500,264 @@ function autodrive(){
                     }
                 }
 
-            }
-
-
-
-            break;
-        case 2://左を向く
-            sp.write(new Buffer(['0']));
-            //console.log('2');
-
-            sp.write(new Buffer(['8']));
-            sp.write(new Buffer(['180']));
-            automode++;
-            delaycounter=0;
-            delaycounter2=0;
-            break;
-
-        case 3://左が壁かどうか。
-            if(delaycounter>10){
-                if(sencer1<150){
-                    sp.write(new Buffer(['8']));
-                    sp.write(new Buffer(['90']));
-                    automode=6;
-                    delaycounter=0;
-                    delaycounter2=0;
-                }else{
-                    automode++;
                 }
-            }
-            delaycounter++;
-            //console.log('3');
-            break;
 
-        case 4://右を向く
-            sp.write(new Buffer(['8']));
-            sp.write(new Buffer(['0']));
-            //console.log('4');
-            automode ++;
-            delaycounter=0;
-            break;
+                break;
+            case 2://左を向く
+                sp.write(new Buffer(['0']));
+                //console.log('2');
 
-        case 5://右が壁かどうか
-            if(delaycounter>10){
-                if(sencer1<150){
-                    sp.write(new Buffer(['8']));
-                    sp.write(new Buffer(['90']));
-                    automode=7;
-                    delaycounter=0;
-                    delaycounter2=0;
-                }else{
-                    console.log('行き止まり');
-                    sescount=0;
-                    sescount2=0;
-                    automode = 11;
-                }
-            }
-            delaycounter++;
-            //console.log('5');
-
-            break;
-
-        case 6://バック
-            sp.write(new Buffer(['8']));
-            sp.write(new Buffer(['90']));
-            if(sencer1<120&&delaycounter>5){
-                returnCounter1=0;
-                returnCounter2=0;
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['180']));
+                automode++;
                 delaycounter=0;
                 delaycounter2=0;
-                automode=9;
-            }else if(sencer2<300){
-                sp.write(new Buffer(['6']));
-                sp.write(new Buffer(['2']));
-                sp.write(new Buffer(['10']));
-            }
+                break;
 
-            delaycounter++;
-            //console.log('6');
-            break;
-
-        case 7://バック
-            sp.write(new Buffer(['8']));
-            sp.write(new Buffer(['90']));
-
-            if(sencer1<120&&delaycounter>5){
-                returnCounter1=0;
-                returnCounter2=0;
-                automode=8;
-                delaycounter=0;
-                delaycounter2=0;
-            }else if(sencer2<300){
-                sp.write(new Buffer(['6']));
-                sp.write(new Buffer(['2']));
-                sp.write(new Buffer(['10']));
-            }
-
-            delaycounter++;
-            //console.log('7');
-            break;
-
-        case 8://右に切り返し
-            //console.log('8');
-            sp.write(new Buffer(['8']));
-            sp.write(new Buffer(['90']));
-
-            if(returnCounter1<returnParam*1&&sencer1<200){
-                sp.write(new Buffer(['4']));
-                sp.write(new Buffer(['1']));
-                sp.write(new Buffer(['10']));
-            }else if(returnCounter1<returnParam*2&&sencer2<200){
-                sp.write(new Buffer(['5']));
-                sp.write(new Buffer(['2']));
-                sp.write(new Buffer(['10']));
-            }else{
-                returnCounter2++;
-                returnCounter1=0;
-
-            }
-
-            if(returnCounter2>returnParam2){
-                automode = 10;
-            }
-
-            returnCounter1++;
-
-            break;
-
-
-        case 9://左に切り返し
-            sp.write(new Buffer(['8']));
-            sp.write(new Buffer(['90']));
-
-            if(returnCounter1<returnParam*1){
-                sp.write(new Buffer(['5']));
-                sp.write(new Buffer(['1']));
-                sp.write(new Buffer(['10']));
-            }else if(returnCounter1<returnParam*2){
-                sp.write(new Buffer(['4']));
-                sp.write(new Buffer(['2']));
-                sp.write(new Buffer(['10']));
-            }else{
-                returnCounter2++;
-                returnCounter1=0;
-
-
-            }
-
-            if(returnCounter2>returnParam2){
-                automode = 10;
-            }
-
-            returnCounter1++;
-
-            break;
-
-        case 10:
-            sescount = 0;
-            sescount2=0;
-            delaycounter=0;
-            delaycounter2=0;
-            automode = 1;
-            shellCount=0;
-            break;
-
-        case 11:
-            if(sp.isOpen()){
-                if(sencer2>100){
-                    sescount++;
-                }else{
-                    sescount2++;
+            case 3://左が壁かどうか。
+                if(delaycounter>10){
+                    if(sencer1<150){
+                        sp.write(new Buffer(['8']));
+                        sp.write(new Buffer(['90']));
+                        automode=6;
+                        delaycounter=0;
+                        delaycounter2=0;
+                    }else{
+                        automode++;
+                    }
                 }
-                if(sescount<3){
+                delaycounter++;
+                //console.log('3');
+                break;
+
+            case 4://右を向く
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['0']));
+                //console.log('4');
+                automode ++;
+                delaycounter=0;
+                break;
+
+            case 5://右が壁かどうか
+                if(delaycounter>10){
+                    if(sencer1<150){
+                        sp.write(new Buffer(['8']));
+                        sp.write(new Buffer(['90']));
+                        automode=7;
+                        delaycounter=0;
+                        delaycounter2=0;
+                    }else{
+                        console.log('行き止まり');
+                        sescount=0;
+                        sescount2=0;
+                        automode = 11;
+                    }
+                }
+                delaycounter++;
+                //console.log('5');
+
+                break;
+
+            case 6://バック
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
+                if(sencer1<120&&delaycounter>5){
+                    returnCounter1=0;
+                    returnCounter2=0;
+                    delaycounter=0;
+                    delaycounter2=0;
+                    automode=9;
+                }else if(sencer2<300){
                     sp.write(new Buffer(['6']));
                     sp.write(new Buffer(['2']));
                     sp.write(new Buffer(['10']));
+                }
+
+                delaycounter++;
+                //console.log('6');
+                break;
+
+            case 7://バック
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
+
+                if(sencer1<120&&delaycounter>5){
+                    returnCounter1=0;
+                    returnCounter2=0;
+                    automode=8;
+                    delaycounter=0;
+                    delaycounter2=0;
+                }else if(sencer2<300){
+                    sp.write(new Buffer(['6']));
+                    sp.write(new Buffer(['2']));
+                    sp.write(new Buffer(['10']));
+                }
+
+                delaycounter++;
+                //console.log('7');
+                break;
+
+            case 8://右に切り返し
+                //console.log('8');
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
+
+                if(returnCounter1<returnParam*1&&sencer1<200){
+                    sp.write(new Buffer(['4']));
+                    sp.write(new Buffer(['1']));
+                    sp.write(new Buffer(['10']));
+                }else if(returnCounter1<returnParam*2&&sencer2<200){
+                    sp.write(new Buffer(['5']));
+                    sp.write(new Buffer(['2']));
+                    sp.write(new Buffer(['10']));
                 }else{
-                    automode=1;
+                    returnCounter2++;
+                    returnCounter1=0;
+
                 }
 
-                if(sescount2>5){
-                    sescount=0;
-                    sescount2=0;
+                if(returnCounter2>returnParam2){
+                    automode = 10;
                 }
+
+                returnCounter1++;
+
+                break;
+
+
+            case 9://左に切り返し
+                sp.write(new Buffer(['8']));
+                sp.write(new Buffer(['90']));
+
+                if(returnCounter1<returnParam*1){
+                    sp.write(new Buffer(['5']));
+                    sp.write(new Buffer(['1']));
+                    sp.write(new Buffer(['10']));
+                }else if(returnCounter1<returnParam*2){
+                    sp.write(new Buffer(['4']));
+                    sp.write(new Buffer(['2']));
+                    sp.write(new Buffer(['10']));
+                }else{
+                    returnCounter2++;
+                    returnCounter1=0;
+
+
+                }
+
+                if(returnCounter2>returnParam2){
+                    automode = 10;
+                }
+
+                returnCounter1++;
+
+                break;
+
+            case 10:
+                sescount = 0;
+                sescount2=0;
+                delaycounter=0;
+                delaycounter2=0;
+                automode = 1;
+                shellCount=0;
+                break;
+
+            case 11:
+                if(sp.isOpen()){
+                    if(sencer2>100){
+                        sescount++;
+                    }else{
+                        sescount2++;
+                    }
+                    if(sescount<3){
+                        sp.write(new Buffer(['6']));
+                        sp.write(new Buffer(['2']));
+                        sp.write(new Buffer(['10']));
+                    }else{
+                        automode=1;
+                    }
+
+                    if(sescount2>5){
+                        sescount=0;
+                        sescount2=0;
+                    }
+                }
+                //console.log('11');
+
+                break;
             }
-            //console.log('11');
-
-            break;
     }
-}
 
-io.sockets.on('connection', function(socket) {
-              console.log('connected');
-              socket.on('command', function(data) {
+    io.sockets.on('connection', function(socket) {
+                  console.log('connected');
+                  socket.on('command', function(data) {
 
-                        if(sp.isOpen()){
-                        sp.write(new Buffer([data.com]));
-                        if(data.com!=0 && data.com != 6)console.log('output'+data.com);
-                        if(data.subcom!='0'||data.com == 8 ||data.com == 7){
-                        sp.write(new Buffer([data.subcom]));
-                        console.log('output subcom '+data.subcom);
+                            if(sp.isOpen()){
+                            sp.write(new Buffer([data.com]));
+                            if(data.com!=0 && data.com != 6)console.log('output'+data.com);
+                            if(data.subcom!='0'||data.com == 8 ||data.com == 7){
+                            sp.write(new Buffer([data.subcom]));
+                            console.log('output subcom '+data.subcom);
+                            }
+                            }
+                            });
+
+                  sp.on('data', function(input) {
+                        var inp = input;
+                        var inpB = 'result'+inp;
+
+                        //console.log('count '+count);
+                        //console.log(inpB);
+                        //console.log(' ');
+
+                        if(!isFinite(inp)){
+                        if(count != 2)count = 0;
+                        //console.log('a '+Number(inp));
+                        }
+
+
+
+                        if(count ==1){
+                        if(Number(inp)!=null){
+                        sencer1 = Number(inp);
                         }
                         }
+                        if(count ==3){
+                        if(Number(inp)!=null){
+                        sencer2 = Number(inp);
+                        }
+                        }
+                        //console.log('count '+count);
+                        //console.log('sens1=' + sencer1 + ' sens2=' + sencer2);
+
+                        count++;
+                        socket.emit('sencer', {
+                                    action: 'post',
+                                    sencer1:sencer1,
+                                    sencer2:sencer2
+                                    });
                         });
+                  socket.on('disconnect', function() {
+                            console.log('disconn');
+                            });
 
-              sp.on('data', function(input) {
-                    var inp = input;
-                    var inpB = 'result'+inp;
+                  socket.on('sens', function() {
+                            sp.write(new Buffer(['9']));
+                            if(auto)autodrive(socket);
+                            });
 
-                    //console.log('count '+count);
-                    //console.log(inpB);
-                    //console.log(' ');
+                  socket.on('auto', function() {
+                            console.log('automode');
+                            automode=0;
+                            auto = !auto;
+                            });
 
-                    if(!isFinite(inp)){
-                    if(count != 2)count = 0;
-                    //console.log('a '+Number(inp));
-                    }
-
-
-
-                    if(count ==1){
-                    if(Number(inp)!=null){
-                    sencer1 = Number(inp);
-                    }
-                    }
-                    if(count ==3){
-                    if(Number(inp)!=null){
-                    sencer2 = Number(inp);
-                    }
-                    }
-                    //console.log('count '+count);
-                    //console.log('sens1=' + sencer1 + ' sens2=' + sencer2);
-
-                    count++;
-                    socket.emit('sencer', {
-                                action: 'post',
-                                sencer1:sencer1,
-                                sencer2:sencer2
-                                });
-                    });
-              socket.on('disconnect', function() {
-                        console.log('disconn');
-                        });
-
-              socket.on('sens', function() {
-                        sp.write(new Buffer(['9']));
-                        //console.log('9');
-                        if(auto)autodrive();
-                        });
-
-              socket.on('auto', function() {
-                        console.log('automode');
-                        auto = true;
-                        });
-
-              });
+                  socket.on('IR', function() {
+                            console.log('automode');
+                            exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+                                      console.log('shot');
+                                      });
+                                 socket.emit('irsend', {
+                                  action: 'post'
+                                  });
+                                  });
+                  });

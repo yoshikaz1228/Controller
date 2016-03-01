@@ -1,47 +1,457 @@
- {"item":[
-  {"maker": "Sharp",
-  "button":[
-            {"name":"電源","key":"KEY_POWER"},
-            {"name":"1ch","key":"KEY_1"},
-            {"name":"2ch","key":"KEY_2"},
-            {"name":"3ch","key":"KEY_3"},
-            {"name":"4ch","key":"KEY_4"},
-            {"name":"5ch","key":"KEY_5"},
-            {"name":"6ch","key":"KEY_6"},
-            {"name":"7ch","key":"KEY_7"},
-            {"name":"8ch","key":"KEY_8"},
-            {"name":"9ch","key":"KEY_9"},
-            {"name":"0ch","key":"KEY_0"},
-            {"name":"入力切替","key":"AV_MODE"},
-            {"name":"番組表","key":"KEY_EPG"},
-            {"name":"ミュート","key":"KEY_MUTE"},
-            {"name":"音量上","key":"KEY_VOLUMEUP"},
-            {"name":"音量下","key":"KEY_VOLUMEDOWN"},
-            {"name":"チャンネル上","key":"KEY_CHANNELUP"},
-            {"name":"チャンネル下","key":"KEY_CHANNELDOWN"},
-            {"name":"メニュー","key":"KEY_MENU"},
-            {"name":"上","key":"KEY_UP"},
-            {"name":"下","key":"KEY_DOWN"},
-            {"name":"左","key":"KEY_LEFT"},
-            {"name":"右","key":"KEY_RIGHT"},
-            {"name":"OK","key":"KEY_OK"},
-            {"name":"赤","key":"KEY_RED"},
-            {"name":"緑","key":"KEY_GREEN"},
-            {"name":"黄","key":"KEY_YELLOW"},
-            {"name":"青","key":"KEY_BLUE"}
-            ]
-  },
-  {"maker": "Epson",
-  "button":[
-            {"name":"電源","key":"KEY_POWER"},
-            {"name":"入力切替","key":"INPUT-A-B"},
-            {"name":"ミュート","key":"KEY_MUTE"},
-            {"name":"メニュー","key":"KEY_MENU"},
-            {"name":"上","key":"KEY_UP"},
-            {"name":"下","key":"KEY_DOWN"},
-            {"name":"左","key":"KEY_LEFT"},
-            {"name":"右","key":"KEY_RIGHT"},
-            {"name":"選択","key":"KEY_SELECT"}
-            ]
-  }
-  ]}
+{
+    "item": [
+        {
+            "button": [
+                {
+                    "key": "KEY_POWER",
+                    "name": "電源"
+                },
+                {
+                    "key": "KEY_1",
+                    "name": "1ch"
+                },
+                {
+                    "key": "KEY_2",
+                    "name": "2ch"
+                },
+                {
+                    "key": "KEY_3",
+                    "name": "3ch"
+                },
+                {
+                    "key": "KEY_4",
+                    "name": "4ch"
+                },
+                {
+                    "key": "KEY_5",
+                    "name": "5ch"
+                },
+                {
+                    "key": "KEY_6",
+                    "name": "6ch"
+                },
+                {
+                    "key": "KEY_7",
+                    "name": "7ch"
+                },
+                {
+                    "key": "KEY_8",
+                    "name": "8ch"
+                },
+                {
+                    "key": "KEY_9",
+                    "name": "9ch"
+                },
+                {
+                    "key": "KEY_0",
+                    "name": "0ch"
+                },
+                {
+                    "key": "AV_MODE",
+                    "name": "入力切替"
+                },
+                {
+                    "key": "KEY_EPG",
+                    "name": "番組表"
+                },
+                {
+                    "key": "KEY_MUTE",
+                    "name": "ミュート"
+                },
+                {
+                    "key": "KEY_VOLUMEUP",
+                    "name": "音量上"
+                },
+                {
+                    "key": "KEY_VOLUMEDOWN",
+                    "name": "音量下"
+                },
+                {
+                    "key": "KEY_CHANNELUP",
+                    "name": "チャンネル上"
+                },
+                {
+                    "key": "KEY_CHANNELDOWN",
+                    "name": "チャンネル下"
+                },
+                {
+                    "key": "KEY_MENU",
+                    "name": "メニュー"
+                },
+                {
+                    "key": "KEY_UP",
+                    "name": "上"
+                },
+                {
+                    "key": "KEY_DOWN",
+                    "name": "下"
+                },
+                {
+                    "key": "KEY_LEFT",
+                    "name": "左"
+                },
+                {
+                    "key": "KEY_RIGHT",
+                    "name": "右"
+                },
+                {
+                    "key": "KEY_OK",
+                    "name": "OK"
+                },
+                {
+                    "key": "KEY_RED",
+                    "name": "赤"
+                },
+                {
+                    "key": "KEY_GREEN",
+                    "name": "緑"
+                },
+                {
+                    "key": "KEY_YELLOW",
+                    "name": "黄"
+                },
+                {
+                    "key": "KEY_BLUE",
+                    "name": "青"
+                }
+            ],
+            "maker": "Sharp"
+        },
+        {
+            "button": [
+                {
+                    "key": "KEY_POWER",
+                    "name": "電源"
+                },
+                {
+                    "key": "INPUT-A-B",
+                    "name": "入力切替"
+                },
+                {
+                    "key": "KEY_MUTE",
+                    "name": "ミュート"
+                },
+                {
+                    "key": "KEY_MENU",
+                    "name": "メニュー"
+                },
+                {
+                    "key": "KEY_UP",
+                    "name": "上"
+                },
+                {
+                    "key": "KEY_DOWN",
+                    "name": "下"
+                },
+                {
+                    "key": "KEY_LEFT",
+                    "name": "左"
+                },
+                {
+                    "key": "KEY_RIGHT",
+                    "name": "右"
+                },
+                {
+                    "key": "KEY_SELECT",
+                    "name": "選択"
+                }
+            ],
+            "maker": "Epson"
+        },
+        {
+            "button": [
+                {
+                    "key": "KEY_POWER",
+                    "name": "電源"
+                },
+                {
+                    "key": "KEY_1",
+                    "name": "1ch"
+                },
+                {
+                    "key": "KEY_2",
+                    "name": "2ch"
+                },
+                {
+                    "key": "KEY_3",
+                    "name": "3ch"
+                },
+                {
+                    "key": "KEY_4",
+                    "name": "4ch"
+                },
+                {
+                    "key": "KEY_5",
+                    "name": "5ch"
+                },
+                {
+                    "key": "KEY_6",
+                    "name": "6ch"
+                },
+                {
+                    "key": "KEY_7",
+                    "name": "7ch"
+                },
+                {
+                    "key": "KEY_8",
+                    "name": "8ch"
+                },
+                {
+                    "key": "KEY_9",
+                    "name": "9ch"
+                },
+                {
+                    "key": "KEY_0",
+                    "name": "0ch"
+                },
+                {
+                    "key": "KEY_CYCLEWINDOWS",
+                    "name": "入力切替"
+                },
+                {
+                    "key": "KEY_MUTE",
+                    "name": "ミュート"
+                },
+                {
+                    "key": "KEY_VOLUMEUP",
+                    "name": "音量上"
+                },
+                {
+                    "key": "KEY_VOLUMEDOWN",
+                    "name": "音量下"
+                },
+                {
+                    "key": "KEY_CHANNELUP",
+                    "name": "チャンネル上"
+                },
+                {
+                    "key": "KEY_CHANNELDOWN",
+                    "name": "チャンネル下"
+                },
+                {
+                    "key": "KEY_MENU",
+                    "name": "メニュー"
+                },
+                {
+                    "key": "KEY_OK",
+                    "name": "OK"
+                },
+                {
+                    "key": "KEY_RED",
+                    "name": "赤"
+                },
+                {
+                    "key": "KEY_GREEN",
+                    "name": "緑"
+                },
+                {
+                    "key": "KEY_YELLOW",
+                    "name": "黄"
+                },
+                {
+                    "key": "KEY_BLUE",
+                    "name": "青"
+                }
+            ],
+            "maker": "Toshiba"
+        },
+        {
+            "button": [
+                {
+                    "key": "KEY_POWER",
+                    "name": "電源"
+                },
+                {
+                    "key": "KEY_1",
+                    "name": "1ch"
+                },
+                {
+                    "key": "KEY_2",
+                    "name": "2ch"
+                },
+                {
+                    "key": "KEY_3",
+                    "name": "3ch"
+                },
+                {
+                    "key": "KEY_4",
+                    "name": "4ch"
+                },
+                {
+                    "key": "KEY_5",
+                    "name": "5ch"
+                },
+                {
+                    "key": "KEY_6",
+                    "name": "6ch"
+                },
+                {
+                    "key": "KEY_7",
+                    "name": "7ch"
+                },
+                {
+                    "key": "KEY_8",
+                    "name": "8ch"
+                },
+                {
+                    "key": "KEY_9",
+                    "name": "9ch"
+                },
+                {
+                    "key": "KEY_0",
+                    "name": "0ch"
+                },
+                {
+                    "key": "INPUT_SELECT",
+                    "name": "入力切替"
+                },
+                {
+                    "key": "KEY_VOLUMEUP",
+                    "name": "音量上"
+                },
+                {
+                    "key": "KEY_VOLUMEDOWN",
+                    "name": "音量下"
+                },
+                {
+                    "key": "CH_+",
+                    "name": "チャンネル上"
+                },
+                {
+                    "key": "CH_-",
+                    "name": "チャンネル下"
+                },
+                {
+                    "key": "KEY_MENU",
+                    "name": "メニュー"
+                },
+                {
+                    "key": "ARROW_UP",
+                    "name": "上"
+                },
+                {
+                    "key": "ARROW_DOWN",
+                    "name": "下"
+                },
+                {
+                    "key": "ARROW_LEFT",
+                    "name": "左"
+                },
+                {
+                    "key": "ARROW_RIGHT",
+                    "name": "右"
+                }
+            ],
+            "maker": "SONY"
+        },
+        {
+            "button": [
+                {
+                    "key": "KEY_POWER",
+                    "name": "電源"
+                },
+                {
+                    "key": "KEY_1",
+                    "name": "1ch"
+                },
+                {
+                    "key": "KEY_2",
+                    "name": "2ch"
+                },
+                {
+                    "key": "KEY_3",
+                    "name": "3ch"
+                },
+                {
+                    "key": "KEY_4",
+                    "name": "4ch"
+                },
+                {
+                    "key": "KEY_5",
+                    "name": "5ch"
+                },
+                {
+                    "key": "KEY_6",
+                    "name": "6ch"
+                },
+                {
+                    "key": "KEY_7",
+                    "name": "7ch"
+                },
+                {
+                    "key": "KEY_8",
+                    "name": "8ch"
+                },
+                {
+                    "key": "KEY_9",
+                    "name": "9ch"
+                },
+                {
+                    "key": "KEY_0",
+                    "name": "0ch"
+                },
+                {
+                    "key": "tv/video",
+                    "name": "入力切替"
+                },
+                {
+                    "key": "KEY_VOLUMEUP",
+                    "name": "音量上"
+                },
+                {
+                    "key": "KEY_VOLUMEDOWN",
+                    "name": "音量下"
+                },
+                {
+                    "key": "KEY_CHANNELUP",
+                    "name": "チャンネル上"
+                },
+                {
+                    "key": "KEY_CHANNELDOWN",
+                    "name": "チャンネル下"
+                },
+                {
+                    "key": "KEY_MENU",
+                    "name": "メニュー"
+                },
+                {
+                    "key": "KEY_MUTE",
+                    "name": "ミュート"
+                },
+                {
+                    "key": "KEY_UP",
+                    "name": "上"
+                },
+                {
+                    "key": "KEY_DOWN",
+                    "name": "下"
+                },
+                {
+                    "key": "KEY_LEFT",
+                    "name": "左"
+                },
+                {
+                    "key": "KEY_RIGHT",
+                    "name": "右"
+                },
+                {
+                    "key": "KEY_R",
+                    "name": "赤"
+                },
+                {
+                    "key": "KEY_G",
+                    "name": "緑"
+                },
+                {
+                    "key": "KEY_Y",
+                    "name": "黄"
+                },
+                {
+                    "key": "KEY_B",
+                    "name": "青"
+                }
+            ],
+            "maker": "Panasonic"
+        }
+    ]
+}

@@ -495,8 +495,10 @@
             }
         }
 
-        document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
-        document.getElementById("gazo2").src = IP_ADD+":8494/?action=stream";
+
+            var socket = io.connect(IP_ADD+':3000');
+
+        //document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
 
         document.onkeydown = keydownMethod;
 
@@ -545,25 +547,15 @@
             if(event.keyCode === 65 ){//カメラ前後切り替え。
                 if(camerafb == 0){
                     document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
-                    document.getElementById("gazo2").src = IP_ADD+":8494/?action=stream";
 
                     camerafb = 1;
                 }else{
                     document.getElementById("gazo").src = IP_ADD+":8494/?action=stream";
-                    document.getElementById("gazo2").src = IP_ADD+":8495/?action=stream";
                     camerafb = 0;
                 }
             }
             if(event.keyCode === 67){//モード切替
                 mode = !mode;
-                console.log('mode:'+mode);
-                if(mode){
-                    document.getElementById("sencer1").innerHTML = '';
-                    document.getElementById("sencer2").innerHTML = '';
-                    document.getElementById("circle").src = "http://yoshikaz.ml/img/hiy.png";
-                }else{
-                    document.getElementById("circle").src = "http://yoshikaz.ml/img/Circle.png";
-                }
             }
 
             if(event.keyCode === 90){
@@ -635,7 +627,7 @@
 
         setInterval("sendControl()",100);
         function sendControl(){
-
+            console.log('sendControl');
             if(mode){
                 if(KeyState[32] == 1){
                     if(fb){
@@ -758,6 +750,35 @@
             }
         }
 
+        function clickSendDrive(){
+            socket.emit('command', {
+                        action: 'post',
+                        com:'1',
+                        subcom:'10'
+                        });
+        }
+        function clickSendLeft(){
+            socket.emit('command', {
+                        action: 'post',
+                        com:'5',
+                        subcom:'0'
+                        });
+        }
+        function clickSendRight(){
+            socket.emit('command', {
+                        action: 'post',
+                        com:'4',
+                        subcom:'0'
+                        });
+        }
+        function clickSendBack(){
+            socket.emit('command', {
+                        action: 'post',
+                        com:'2',
+                        subcom:'10'
+                        });
+        }
+
         function clickSendIR(){
             console.log('IR');
 
@@ -767,65 +788,32 @@
                         value:getValuebyName(document.form1.sel_bunruiA.value,document.form1.sel_bunruiB.value)
                         });
 
-            console.log('value:'+getValuebyName(document.form1.sel_bunruiA.value,document.form1.sel_bunruiB.value));
+                        console.log('value:'+getValuebyName(document.form1.sel_bunruiA.value,document.form1.sel_bunruiB.value));
         }
         </script>
-        <font size="5">
-            <a>Controller</a>
-        </font>
 
-        <div style="position: absolute; top: 10px; left: 25%">
-            <font size="5" color="#FFFFFF">
-                <a id="fbmode" >drive</a>
-            </font>
-        </div>
-        <div style="position: absolute; top: 10px; left: 50%">
-            <table border=0 align="center">
-                <tr>
-                    <td>
-                        <form name="form1" method="get" action="" onsubmit="gettext(this)">
-                            <select name="sel_bunruiA" onChange="selectBunruiA(this)">
-                                <option value="">メーカー</option>
-                            </select>
-                            <select name="sel_bunruiB" width="100px"><option value="">機種</option></select>
-                        </form>
-                        <script type="text/javascript" language="JavaScript">
-                            createSelection( form1.elements['sel_bunruiA'], "(種類)", bunruiA, bunruiA);
-                            </script>
-                    </td>
-                    <td>
-                        <button type="button" onclick="clickSendIR()" style="width: 100px; height:30px">IR Send</button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div style="position: absolute; top: 10px; right: 3%">
-            <button type="button" onclick="clickAutomode()" style="width: 100px; height:30px">AutoMode</button>
-        </div>
-        <div style="position: absolute; top: 30%; left: 480px" >
-            <img id="circle" src="http://yoshikaz.ml/img/hiy.png" style="width:40%;height:45%;">
-                </div>
+        <style type="text/css">
+            </style>
 
-        <p class="resizeimage">
-        　　<img id="gazo" src="http://192.168.100.103:8495/?action=stream" style="width:100%;height:85%;" border="0" alt="">
-
-            </p>
-            <div style="position: absolute; bottom: 10px; left: 0%">
-                <p class="resizeimage">
-                <img id="gazo2" src="http://192.168.100.103:8494/?action=stream" style="width:60%;height:35%;" border="0" alt="">
-                    </p>
-                    </div>
-
-            <div style="position: absolute; top: 380px; left: 65%">
-                <font size="5" color="#FE2E2E">
-                    <a id="sencer1" >aaa</a>
-                </font>
-            </div>
-            <div style="position: absolute; bottom: 50px; left: 20%">
-                <font size="5" color="#FE2E2E">
-                    <a id="sencer2" >bbb</a>
-                </font>
+            <div style="position: absolute; top: 0px; left: 0px">
+            <p class="resizeimage">
+            　　<img id="gazo" src="http://192.168.100.103:8495/?action=stream" style="-webkit-appearance: none; width:750px;height:667px; background-color: #fff;" border="0" alt="">
+                </p>
             </div>
 
-            </body>
+        <div style="position: absolute; top: 667px; left: 0px">
+            <button type="button" onclick="clickAutomode()" style="-webkit-appearance: none; width: 400px; height:700px; background-color: #fff;"><font size="5" color = "#000">AutoMode</font></button>
+        </div>
+
+        <div  style="position: absolute; top: 667px; left: 400px">
+            <button type="button" onclick="clickSendDrive()" style="-webkit-appearance: none; width:400px; height:222px; background-color: #fff;"><font size="5" color = "#000">drive</font></button>
+        </div>
+        <div  style="position: absolute; top: 888px; left: 400px">
+            <button type="button" onclick="clickSendLeft()" style="-webkit-appearance: none; width:200px; height:222px; background-color: #fff;"><font size="5" color = "#000">left</font></button>
+            <button type="button" onclick="clickSendRight()" style="-webkit-appearance: none; width:200px; height:222px; background-color: #fff;"><font size="5" color = "#000">right</font></button>
+        </div>
+        <div  style="position: absolute; top: 1100px; left: 400px">
+            <button type="button" onclick="clickSendBack()" style="-webkit-appearance: none; width:400px; height:222px; background-color: #fff;"><font size="5" color = "#000">back</font></button>
+        </div>
+    </body>
 </html>
