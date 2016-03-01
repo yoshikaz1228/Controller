@@ -495,10 +495,7 @@
             }
         }
 
-
-            var socket = io.connect(IP_ADD+':3000');
-
-        //document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
+        document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
 
         document.onkeydown = keydownMethod;
 
@@ -627,8 +624,7 @@
 
         setInterval("sendControl()",100);
         function sendControl(){
-            console.log('sendControl');
-            if(mode){
+            if(mode&&false){
                 if(KeyState[32] == 1){
                     if(fb){
                         socket.emit('command', {
@@ -751,32 +747,32 @@
         }
 
         function clickSendDrive(){
-            socket.emit('command', {
-                        action: 'post',
-                        com:'1',
-                        subcom:'10'
-                        });
+            if(crsv1<180){
+                        crsv1 += 3;
+                    }else{
+                        crsv1 = 180;
+                    }
         }
         function clickSendLeft(){
-            socket.emit('command', {
-                        action: 'post',
-                        com:'5',
-                        subcom:'0'
-                        });
+            if(crsv2<180){
+                        crsv2 += 3;
+                    }else{
+                        crsv2 = 180;
+                    }
         }
         function clickSendRight(){
-            socket.emit('command', {
-                        action: 'post',
-                        com:'4',
-                        subcom:'0'
-                        });
+            if(crsv2>0){
+                        crsv2 -= 3;
+                    }else{
+                        crsv2 = 0;
+                    }
         }
         function clickSendBack(){
-            socket.emit('command', {
-                        action: 'post',
-                        com:'2',
-                        subcom:'10'
-                        });
+            if(crsv1>0){
+                        crsv1 -= 3;
+                    }else{
+                        crsv1 = 0;
+                    }
         }
 
         function clickSendIR(){
@@ -792,28 +788,17 @@
         }
         </script>
 
-        <style type="text/css">
-            </style>
-
             <div style="position: absolute; top: 0px; left: 0px">
             <p class="resizeimage">
-            　　<img id="gazo" src="http://192.168.100.103:8495/?action=stream" style="-webkit-appearance: none; width:750px;height:667px; background-color: #fff;" border="0" alt="">
+            　　<img id="gazo" src="http://192.168.100.103:8495/?action=stream" style="-webkit-appearance: none; width:100vw;height:50vw; background-color: #fff;" border="0" alt="">
                 </p>
             </div>
 
-        <div style="position: absolute; top: 667px; left: 0px">
-            <button type="button" onclick="clickAutomode()" style="-webkit-appearance: none; width: 400px; height:700px; background-color: #fff;"><font size="5" color = "#000">AutoMode</font></button>
-        </div>
-
-        <div  style="position: absolute; top: 667px; left: 400px">
-            <button type="button" onclick="clickSendDrive()" style="-webkit-appearance: none; width:400px; height:222px; background-color: #fff;"><font size="5" color = "#000">drive</font></button>
-        </div>
-        <div  style="position: absolute; top: 888px; left: 400px">
-            <button type="button" onclick="clickSendLeft()" style="-webkit-appearance: none; width:200px; height:222px; background-color: #fff;"><font size="5" color = "#000">left</font></button>
-            <button type="button" onclick="clickSendRight()" style="-webkit-appearance: none; width:200px; height:222px; background-color: #fff;"><font size="5" color = "#000">right</font></button>
-        </div>
-        <div  style="position: absolute; top: 1100px; left: 400px">
-            <button type="button" onclick="clickSendBack()" style="-webkit-appearance: none; width:400px; height:222px; background-color: #fff;"><font size="5" color = "#000">back</font></button>
+            <button type="button" onclick="clickAutomode()" style="-webkit-appearance: none; width: 50vw; height:50vw; background-color: #9999FF; position: absolute; bottom: 17vw; left: 0vw;"><font size="10" color = "#000">AutoMode</font></button>
+            <button type="button" onclick="clickSendDrive()" style="-webkit-appearance: none; width:50vw; height:16vw; background-color: #CC6666;position: absolute; bottom: 50vw; left: 50vw;"><font size="10" color = "#000">↑</font></button>
+            <button type="button" onclick="clickSendLeft()" style="-webkit-appearance: none; width:24vw; height:16vw; background-color: #FFFFBB;position: absolute; bottom: 33vw; left: 50vw;"><font size="10" color = "#000">←</font></button>
+            <button type="button" onclick="clickSendRight()" style="-webkit-appearance: none; width:24vw; height:16vw; background-color: #00AA00;position: absolute; bottom: 33vw; right: 0vw;"><font size="10" color = "#000">→</font></button>
+            <button type="button" onclick="clickSendBack()" style="-webkit-appearance: none; width:50vw; height:16vw; background-color: #B1F9D0;position: absolute; bottom: 17vw; left: 50vw;"><font size="10" color = "#000">↓</font></button>
         </div>
     </body>
 </html>
