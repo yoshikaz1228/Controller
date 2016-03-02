@@ -85,10 +85,11 @@ var auto = false;
                             auto = !auto;
                             });
 
-                  socket.on('IR', function() {
+                  socket.on('IR', function(data) {
                             console.log('automode');
-                            exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
-                                      console.log('shot');
+                            console.log('irsend SEND_ONCE '+data.maker +' '+data.value);
+                            exec('irsend SEND_ONCE '+data.maker +' '+data.value, function(err, stdout, stderr){
+
                                       });
                                  socket.emit('irsend', {
                                   action: 'post'

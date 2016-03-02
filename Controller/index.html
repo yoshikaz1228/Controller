@@ -10,6 +10,7 @@
         <script type="text/javascript">
 
             var IP_ADD = "102.168.100.103";
+            IP_ADD = "localhost";
 
             var bunruiA = new Array("Sharp","Epson","Panasonic","SONY","Toshiba");
             var bunruiB = new Array();
@@ -28,6 +29,8 @@
             var crsv2 = 90;
             var count = 0;
             var count2 = 0;
+
+            var initBool = true;
 
             var crsv1past = 90;
             var crsv2past = 90;
@@ -647,7 +650,10 @@
 
         setInterval("sendControl()",100);
         function sendControl(){
-
+            if(initBool){
+                  document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
+                  initBool = false;
+            }
             if(mode){
                 if(KeyState[32] == 1){
                     if(fb){

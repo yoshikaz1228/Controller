@@ -10,6 +10,7 @@
         <script type="text/javascript">
 
             var IP_ADD = "102.168.100.103";
+            IP_ADD = "192.168.11.3";
 
             var bunruiA = new Array("Sharp","Epson","Panasonic","SONY","Toshiba");
             var bunruiB = new Array();
@@ -28,6 +29,8 @@
             var crsv2 = 90;
             var count = 0;
             var count2 = 0;
+
+            var initBool = true;
 
             var crsv1past = 90;
             var crsv2past = 90;
@@ -632,6 +635,10 @@
 
         setInterval("sendControl()",100);
         function sendControl(){
+            if(initBool){
+                  document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
+                  initBool = false;
+            }
             if(mode&&false){
                 if(KeyState[32] == 1){
                     if(fb){
@@ -807,6 +814,27 @@
             <button type="button" onclick="clickSendLeft()" style="-webkit-appearance: none; width:24vw; height:16vw; background-color: #FFFFBB;position: absolute; bottom: 33vw; left: 50vw;"><font size="10" color = "#000">←</font></button>
             <button type="button" onclick="clickSendRight()" style="-webkit-appearance: none; width:24vw; height:16vw; background-color: #00AA00;position: absolute; bottom: 33vw; right: 0vw;"><font size="10" color = "#000">→</font></button>
             <button type="button" onclick="clickSendBack()" style="-webkit-appearance: none; width:50vw; height:16vw; background-color: #B1F9D0;position: absolute; bottom: 17vw; left: 50vw;"><font size="10" color = "#000">↓</font></button>
+        </div>
+
+        <div style="position: absolute; bottom: 0px; left: 0px">
+            <table border=0 align="center">
+                <tr>
+                    <td>
+                        <form name="form1" method="get" action="" onsubmit="gettext(this)">
+                            <select name="sel_bunruiA" onChange="selectBunruiA(this)" style="width: 32vw; height:14vw;">
+                                <option value=""><font size="10" color = "#000">メーカー</font></option>
+                            </select>
+                            <select name="sel_bunruiB" width="100px" style="width: 32vw; height:14vw;"><option value=""><font size="10" color = "#000">機種</font></option></select>
+                        </form>
+                        <script type="text/javascript" language="JavaScript">
+                            createSelection( form1.elements['sel_bunruiA'], "(種類)", bunruiA, bunruiA);
+                            </script>
+                    </td>
+                    <td>
+                        <button type="button" onclick="clickSendIR()" style="-webkit-appearance: none; width:32vw; height:14vw; background-color: #F4A460;"><font size="10" color = "#000">IR Send</font></button>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>
