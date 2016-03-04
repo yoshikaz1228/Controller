@@ -734,6 +734,8 @@
                       console.log('auto mode');
                       socket.emit('auto', {
                                   action: 'post'
+                                  maker:document.form1.sel_bunruiA.value,
+                        value:getValuebyName(document.form1.sel_bunruiA.value,document.form1.sel_bunruiB.value)
                                   });
                   }
 

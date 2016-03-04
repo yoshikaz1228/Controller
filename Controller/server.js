@@ -52,6 +52,9 @@ var shellCount = 0;
 
 var circleviewCount=0;
 
+var maker = 'none';
+var model = 'none';
+
 
 /*パラメーター*/
 var returnParam = 15;//切り返し時間
@@ -88,7 +91,7 @@ function getCame(num,socket){
          sp.write(new Buffer([ang1]));
 
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -100,7 +103,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['7']));
          sp.write(new Buffer([ang2]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -115,7 +118,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['8']));
          sp.write(new Buffer([ang1]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -127,7 +130,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['8']));
          sp.write(new Buffer([ang1]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -139,7 +142,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['8']));
          sp.write(new Buffer([ang1]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -151,7 +154,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['8']));
          sp.write(new Buffer([ang1]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -166,7 +169,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['8']));
          sp.write(new Buffer([ang1]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -178,7 +181,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['7']));
          sp.write(new Buffer([ang2]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -193,7 +196,7 @@ function getCame(num,socket){
          sp.write(new Buffer(['8']));
          sp.write(new Buffer([ang1]));
          auto = false;
-         exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
               console.log('shot');
               });
          socket.emit('irsend', {
@@ -745,10 +748,12 @@ function autodrive(socket){
                             if(auto)autodrive(socket);
                             });
 
-                  socket.on('auto', function() {
+                  socket.on('auto', function(data) {
                             console.log('automode');
                             automode=0;
                             auto = !auto;
+                            maker = data.maker;
+                            model = data.value;
                             });
 
                   socket.on('IR', function(data) {
