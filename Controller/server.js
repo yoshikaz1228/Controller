@@ -76,7 +76,7 @@ function Sleep( T ){
 function getCame(num,socket){
     exec('python ~/Documents/containTV/containTV.py', function(err, stdout, stderr){
          if(stdout == 0){
-          exec('irsend SEND_ONCE Sharp KEY_POWER', function(err, stdout, stderr){
+         exec('irsend SEND_ONCE '+maker +' '+model, function(err, stdout, stderr){
                                       console.log('shot');
                                       });
                                   socket.emit('irsend', {
