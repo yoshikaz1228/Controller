@@ -559,13 +559,13 @@
 
             if(event.keyCode === 65 ){//カメラ前後切り替え。
                 if(camerafb == 0){
-                    document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
-                    document.getElementById("gazo2").src = IP_ADD+":8494/?action=stream";
+                    document.getElementById("gazo").src = 'http://'+IP_ADD+":8495/?action=stream";
+                    document.getElementById("gazo2").src = 'http://'+IP_ADD+":8494/?action=stream";
 
                     camerafb = 1;
                 }else{
-                    document.getElementById("gazo").src = IP_ADD+":8494/?action=stream";
-                    document.getElementById("gazo2").src = IP_ADD+":8495/?action=stream";
+                    document.getElementById("gazo").src = 'http://'+IP_ADD+":8494/?action=stream";
+                    document.getElementById("gazo2").src = 'http://'+IP_ADD+":8495/?action=stream";
                     camerafb = 0;
                 }
             }
@@ -651,7 +651,8 @@
         setInterval("sendControl()",100);
         function sendControl(){
             if(initBool){
-                  document.getElementById("gazo").src = IP_ADD+":8495/?action=stream";
+                  document.getElementById("gazo").src = 'http://'+IP_ADD+":8495/?action=stream";
+                  document.getElementById("gazo2").src = 'http://'+IP_ADD+":8494/?action=stream";
                   initBool = false;
             }
             if(mode){
